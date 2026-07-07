@@ -1,4 +1,4 @@
-import { Heart, Scale, ShieldCheck, MapPin } from 'lucide-react';
+import { Heart, ShieldCheck, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatShortPrice } from '../../utils/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -108,13 +108,6 @@ export function BuyerPropertyCard({ property }: BuyerPropertyCardProps) {
             title="Save Property"
           >
             <Heart size={14} className={`transition-transform duration-200 active:scale-75 ${isSaved ? 'fill-primary text-primary' : ''}`} />
-          </button>
-          <button 
-            className="p-2.5 bg-black/60 border border-white/10 hover:bg-purple-500/80 hover:border-purple-500/85 text-white rounded-xl backdrop-blur-md transition-all duration-300 shadow-md" 
-            title="Compare"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-          >
-            <Scale size={14} />
           </button>
         </div>
       </div>

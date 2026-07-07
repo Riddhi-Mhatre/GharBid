@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSellerAuctions, getSellerProperties, scheduleSellerAuction } from '../../../services/sellerService';
@@ -9,7 +9,7 @@ import {
   Gavel, CheckCircle, Activity, TrendingUp,
   ArrowRight, X, Building2, MapPin, Plus, Loader2,
   CalendarClock, ShieldAlert, LayoutGrid, Sparkles,
-  ArrowUpRight
+  ArrowUpRight, IndianRupee, Info
 } from 'lucide-react';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -42,6 +42,9 @@ interface CreateAuctionModalProps {
 
 function CreateAuctionModal({ property, onClose, onSuccess }: CreateAuctionModalProps) {
   const queryClient = useQueryClient();
+  const startRef = useRef<HTMLInputElement>(null);
+  const endRef = useRef<HTMLInputElement>(null);
+  
   const [form, setForm] = useState({
     startingPrice: '',
     reservePrice: '',
@@ -99,74 +102,128 @@ function CreateAuctionModal({ property, onClose, onSuccess }: CreateAuctionModal
     });
   };
 
-  const inputCls = 'w-full bg-black/60 border border-dark-border/80 rounded-xl px-4 py-3 text-white placeholder-muted focus:border-primary/60 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:shadow-[0_0_15px_rgba(255,215,0,0.05)] transition-all duration-200 font-sans';
-  const labelCls = 'block text-[10px] font-bold text-muted/70 uppercase tracking-widest mb-2 font-sans';
+  const inputCls = 'w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-muted focus:border-primary/60 focus:bg-primary/5 focus:outline-none focus:ring-1 focus:ring-primary/20 hover:border-white/20 transition-all duration-300 font-sans shadow-inner';
+  const labelCls = 'block text-[10px] font-bold text-muted/80 uppercase tracking-widest mb-1.5 font-sans';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fade-in">
       <div className="absolute inset-0" onClick={onClose} />
       
-      <div className="relative z-10 w-full max-w-lg bg-[#0A0A0A]/95 border border-primary/20 rounded-3xl p-6 md:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.95)] animate-slide-up overflow-hidden">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <Gavel size={15} className="text-primary" />
-              <span className="text-[10px] text-primary font-bold uppercase tracking-widest font-sans">Create Auction</span>
-            </div>
-            <h2 className="text-2xl font-display font-extrabold text-white line-clamp-1 leading-tight">{property.title}</h2>
-            <p className="text-xs text-muted mt-1.5 flex items-center gap-1"><MapPin size={12} className="text-primary/70" /> {getCity(property)}, {getState(property)}</p>
-          </div>
-          <button 
-            onClick={onClose} 
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors text-muted hover:text-white"
-          >
-            <X size={18} />
-          </button>
-        </div>
+      <div className="relative z-10 w-full max-w-xl bg-gradient-to-br from-[#111] to-[#080808] border border-white/10 rounded-3xl p-1 shadow-[0_30px_80px_rgba(0,0,0,0.9),0_0_40px_rgba(255,215,0,0.05)] animate-slide-up overflow-hidden">
+        {/* Glow Effects */}
+        <div className="absolute -top-32 -left-32 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] pointer-events-none" />
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="bg-[#0a0a0a]/90 backdrop-blur-2xl rounded-[22px] p-6 md:p-8 relative z-10">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-8 pb-6 border-b border-white/5">
             <div>
-              <label className={labelCls}>Starting Price (₹)</label>
-              <input className={inputCls} type="number" min="1" placeholder="e.g. 5000000" value={form.startingPrice} onChange={e => setF('startingPrice', e.target.value)} />
+              <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,215,0,0.1)]">
+                <Gavel size={12} className="text-primary animate-pulse" />
+                <span className="text-[9px] text-primary font-bold uppercase tracking-widest">Schedule Auction</span>
+              </div>
+              <h2 className="text-3xl font-display font-extrabold text-white line-clamp-1 leading-tight tracking-tight">{property.title}</h2>
+              <p className="text-xs text-muted mt-2 flex items-center gap-1.5 font-medium"><MapPin size={14} className="text-primary/70" /> {getCity(property)}, {getState(property)}</p>
             </div>
-            <div>
-              <label className={labelCls}>Reserve Price (₹)</label>
-              <input className={inputCls} type="number" min="1" placeholder="e.g. 6000000" value={form.reservePrice} onChange={e => setF('reservePrice', e.target.value)} />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelCls}>Bid Increment (₹)</label>
-            <input className={inputCls} type="number" min="1" placeholder="e.g. 50000" value={form.bidIncrement} onChange={e => setF('bidIncrement', e.target.value)} />
-            <p className="text-[10px] text-muted/70 mt-1.5 leading-relaxed">Minimum amount each new bid must exceed the previous bid by.</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelCls}>Start Date & Time</label>
-              <input className={`${inputCls} cursor-pointer`} type="datetime-local" value={form.startTime} onChange={e => setF('startTime', e.target.value)} />
-            </div>
-            <div>
-              <label className={labelCls}>End Date & Time</label>
-              <input className={`${inputCls} cursor-pointer`} type="datetime-local" value={form.endTime} onChange={e => setF('endTime', e.target.value)} />
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-dark-border text-muted hover:text-white hover:bg-white/5 font-extrabold transition-all text-[10px] uppercase tracking-widest">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-gradient-to-r from-primary to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-extrabold text-[10px] uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.35)] transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
+            <button 
+              onClick={onClose} 
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:rotate-90 transition-all duration-300 text-muted hover:text-white shrink-0 shadow-lg"
             >
-              {isPending ? <><Loader2 size={16} className="animate-spin" />Creating...</> : <><Gavel size={16} />Create Auction</>}
+              <X size={16} />
             </button>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="group">
+                <label className={labelCls}>Starting Price</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors pointer-events-none">
+                    <IndianRupee size={16} />
+                  </div>
+                  <input className={inputCls} type="number" min="1" placeholder="e.g. 5000000" value={form.startingPrice} onChange={e => setF('startingPrice', e.target.value)} />
+                </div>
+              </div>
+              <div className="group">
+                <label className={labelCls}>Reserve Price</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-emerald-400 transition-colors pointer-events-none">
+                    <IndianRupee size={16} />
+                  </div>
+                  <input className={inputCls} type="number" min="1" placeholder="e.g. 6000000" value={form.reservePrice} onChange={e => setF('reservePrice', e.target.value)} />
+                </div>
+              </div>
+            </div>
+
+            <div className="group">
+              <label className={labelCls}>Bid Increment</label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-blue-400 transition-colors pointer-events-none">
+                  <TrendingUp size={16} />
+                </div>
+                <input className={inputCls} type="number" min="1" placeholder="e.g. 50000" value={form.bidIncrement} onChange={e => setF('bidIncrement', e.target.value)} />
+              </div>
+              <p className="text-[10px] text-muted/60 mt-2 flex items-center gap-1.5"><Info size={12} className="text-blue-400/70" /> Minimum amount each new bid must exceed the previous bid by.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+              <div className="group" onClick={() => { try { startRef.current?.showPicker(); } catch(e){} }}>
+                <label className={labelCls}>Start Date & Time</label>
+                <div className="relative cursor-pointer">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary group-hover:text-primary transition-colors pointer-events-none">
+                    <CalendarClock size={16} />
+                  </div>
+                  <input 
+                    ref={startRef}
+                    className={`${inputCls} cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden`} 
+                    type="datetime-local" 
+                    value={form.startTime} 
+                    onChange={e => setF('startTime', e.target.value)} 
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted/30 group-hover:text-muted/60 transition-colors pointer-events-none">
+                    <CalendarClock size={14} />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="group" onClick={() => { try { endRef.current?.showPicker(); } catch(e){} }}>
+                <label className={labelCls}>End Date & Time</label>
+                <div className="relative cursor-pointer">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-red-400 group-hover:text-red-400 transition-colors pointer-events-none">
+                    <CalendarClock size={16} />
+                  </div>
+                  <input 
+                    ref={endRef}
+                    className={`${inputCls} cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden`} 
+                    type="datetime-local" 
+                    value={form.endTime} 
+                    onChange={e => setF('endTime', e.target.value)} 
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted/30 group-hover:text-muted/60 transition-colors pointer-events-none">
+                    <CalendarClock size={14} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-6 border-t border-white/5">
+              <button type="button" onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-white/10 text-muted font-extrabold hover:text-white hover:bg-white/5 hover:border-white/20 transition-all text-[11px] uppercase tracking-widest hover:shadow-lg">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="flex-[2] flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-primary via-yellow-400 to-yellow-600 hover:from-yellow-400 hover:via-yellow-300 hover:to-primary text-black font-extrabold text-[11px] uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition-all duration-500 active:scale-95 disabled:opacity-50 disabled:pointer-events-none group"
+              >
+                {isPending ? (
+                  <><Loader2 size={16} className="animate-spin" /> Scheduling...</>
+                ) : (
+                  <>Schedule Auction <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

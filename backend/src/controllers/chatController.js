@@ -1,7 +1,4 @@
 import * as chatService from '../services/chatService.js';
-import * as PropertyModel from '../models/dynamodb/PropertyModel.js';
-import * as PurchaseModel from '../models/dynamodb/PurchaseModel.js';
-import { generateUUID } from '../utils/helpers.js';
 import { HTTP } from '../utils/constants.js';
 import { createNotification } from '../services/notificationService.js';
 
@@ -145,47 +142,13 @@ export const confirmMeet = async (req, res, next) => {
   }
 };
 
-// POST /v1/chat/rooms/:roomId/pay  body: { role: 'buyer'|'seller' }
-export const payDealFee = async (req, res, next) => {
-  try {
-    const { roomId } = req.params;
-    const { role } = req.body;
-    if (!['buyer', 'seller'].includes(role)) {
-      return res.status(HTTP.BAD_REQUEST).json({ success: false, error: 'role must be buyer or seller' });
-    }
-    const field = role === 'buyer' ? 'buyerPaid' : 'sellerPaid';
-    await chatService.updateRoomDealState(roomId, { [field]: true });
-
-    // Check if BOTH have paid — if so, mark deal closed
-    const room = await chatService.getRoom(roomId);
-    let msg;
-    if (room && room.buyerPaid && room.sellerPaid) {
-      await chatService.updateRoomDealState(roomId, { dealStatus: 'closed', isActive: false });
-
-      if (room.propertyId) {
-        await PropertyModel.updateProperty(room.propertyId, { status: 'sold' });
-        await PurchaseModel.createPurchase({
-          purchaseId: generateUUID(),
-          propertyId: room.propertyId,
-          buyerId: room.buyerId,
-          sellerId: room.sellerId,
-          propertyTitle: room.propertyTitle,
-          amount: 0, // Demo value
-          date: new Date().toISOString()
-        });
-      }
-
-      await createNotification(room.buyerId, 'deal_finalized', 'Deal Finalized', `Congratulations! The deal for ${room.propertyTitle} has been finalized.`, { propertyId: room.propertyId });
-      await createNotification(room.sellerId, 'deal_finalized', 'Deal Finalized', `Congratulations! The deal for ${room.propertyTitle} has been finalized.`, { propertyId: room.propertyId });
-
-      msg = await chatService.saveDealSystemMessage(roomId, 'deal_closed', {}, '🎉 Deal successfully closed! Both parties have paid the platform fee.');
-    } else {
-      const msgType = role === 'buyer' ? 'payment_buyer' : 'payment_seller';
-      const msgContent = role === 'buyer' ? 'Buyer has paid the platform fee.' : 'Seller has paid the platform fee.';
-      msg = await chatService.saveDealSystemMessage(roomId, msgType, { role }, msgContent);
-    }
-    res.json({ success: true, data: msg });
-  } catch (err) {
-    next(err);
-  }
+// POST /v1/chat/rooms/:roomId/pay  ── DEPRECATED ──────────────────────────────
+// Payment is now handled via the Razorpay flow:
+//   POST /v1/payments/create-order  →  Razorpay checkout  →  POST /v1/payments/verify
+// This stub remains so old clients get a clear error rather than a 404.
+export const payDealFee = async (_req, res) => {
+  return res.status(410).json({
+    success: false,
+    error: 'This endpoint is deprecated. Use POST /v1/payments/create-order and POST /v1/payments/verify instead.',
+  });
 };

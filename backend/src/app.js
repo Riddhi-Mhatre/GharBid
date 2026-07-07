@@ -15,6 +15,7 @@ import chatRoutes from './routes/v1/chat.routes.js';
 import sellerRoutes from './routes/v1/seller.routes.js';
 import buyerRoutes from './routes/v1/buyer.routes.js';
 import inquiryRoutes from './routes/v1/inquiry.routes.js';
+import paymentRoutes from './routes/v1/payment.routes.js';
 
 export const app = express();
 
@@ -40,6 +41,7 @@ app.use('/v1/chat', chatRoutes);
 app.use('/v1/seller', sellerRoutes);
 app.use('/v1/buyer', buyerRoutes);
 app.use('/v1/inquiries', inquiryRoutes);
+app.use('/v1/payments', paymentRoutes);
 
 // ─── Global Error Handler ──────────────────────────────────
 app.use(errorHandler);

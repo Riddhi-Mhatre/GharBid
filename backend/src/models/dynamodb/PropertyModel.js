@@ -45,7 +45,6 @@ export const queryProperties = async (filters) => {
   // Scan with filters – for production, use GSIs + ElasticSearch
   const items = await dynamo.scanItems(TABLE);
   return items.filter(p => {
-    // Filter out demo properties (they don't have a sellerId)
     if (!p.sellerId) return false;
 
     if (filters.type && p.type !== filters.type) return false;
@@ -54,7 +53,6 @@ export const queryProperties = async (filters) => {
     if (filters.maxPrice && price > filters.maxPrice) return false;
 
     // Status filter: accept 'approved' status OR 'verified' verificationStatus
-    // so both auto-approved seller properties and legacy demo properties appear
     if (filters.status) {
       if (p.status === 'sold') return false;
       const isApprovedByStatus         = p.status === 'approved';

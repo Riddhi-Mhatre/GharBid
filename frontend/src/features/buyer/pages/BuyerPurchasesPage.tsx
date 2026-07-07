@@ -1,11 +1,12 @@
-import { Home, Download, Phone } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { formatShortPrice } from '../../../utils/formatters';
-
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getPurchases } from '../../../services/userService';
 import { Building2, Loader2 } from 'lucide-react';
 
 export default function BuyerPurchasesPage() {
+  const navigate = useNavigate();
   const { data: purchases = [], isLoading } = useQuery({
     queryKey: ['buyer', 'purchases'],
     queryFn: getPurchases,
@@ -40,7 +41,11 @@ export default function BuyerPurchasesPage() {
           </div>
         ) : (
           (purchases as any[]).map((purchase) => (
-            <div key={purchase.purchaseId} className="bg-dark-card border border-dark-border rounded-xl p-6 flex flex-col md:flex-row gap-6 hover:border-secondary/50 transition-all duration-300">
+            <div 
+              key={purchase.purchaseId} 
+              onClick={() => navigate(`/properties/${purchase.propertyId}`)}
+              className="bg-dark-card border border-dark-border rounded-xl p-6 flex flex-col md:flex-row gap-6 hover:border-secondary/50 transition-all duration-300 cursor-pointer"
+            >
               <div className="w-full md:w-48 h-32 shrink-0 rounded-lg overflow-hidden bg-dark flex items-center justify-center border border-dark-border">
                 {purchase.property?.images?.[0] ? (
                   <img src={purchase.property.images[0]} alt={purchase.propertyTitle || 'Property'} className="w-full h-full object-cover" />
@@ -70,15 +75,7 @@ export default function BuyerPurchasesPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 border border-dark-border">
-                      <Download size={14} /> Agreement
-                    </button>
-                    <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 border border-dark-border">
-                      <Download size={14} /> Invoice
-                    </button>
-                    <button className="px-4 py-2 bg-white text-black rounded text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 hover:bg-primary">
-                      <Phone size={14} /> Support
-                    </button>
+                    {/* Empty block, previously held Support button */}
                   </div>
                 </div>
               </div>

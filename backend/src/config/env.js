@@ -43,6 +43,10 @@ const envSchema = z.object({
   // SNS
   SNS_TOPIC_ARN: z.string().optional(),
 
+  // Razorpay
+  RAZORPAY_KEY_ID: z.string().default('rzp_test_Sy2wxO64TxSBRa'),
+  RAZORPAY_KEY_SECRET: z.string().default(''),
+
   // Frontend
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
 });
