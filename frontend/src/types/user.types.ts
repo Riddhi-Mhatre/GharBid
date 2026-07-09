@@ -7,5 +7,7 @@ export interface User {
   role: Role;
   isVerified: boolean;
   profileImage?: string;
+  location?: string;
+  bio?: string;
   createdAt: string;
 }

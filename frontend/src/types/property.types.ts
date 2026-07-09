@@ -5,6 +5,7 @@ export interface Property {
   description: string;
   type: 'apartment' | 'house' | 'villa' | 'plot' | 'commercial';
   price: number;
+  salePrice?: number;
   area: number;
   bedrooms?: number;
   bathrooms?: number;

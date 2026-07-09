@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSellerProperties, deleteSellerProperty, markPropertySold } from '../../../services/sellerService';
 import {
   Building2, Plus, Pencil, Trash2, FileText, Eye, Gavel, CheckCircle,
-  CreditCard, ShieldCheck, ShieldAlert, MapPin, Calendar, Sparkles, Compass
+  MapPin, Calendar, Sparkles, Compass
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,16 +20,6 @@ const getStatus = (p: any) => {
   return p.verificationStatus ?? p.status ?? 'pending';
 };
 
-const REQUIRED_DOC_KEYS = ['saleDeed', 'propertyCard', 'taxReceipt', 'ownerAadhar', 'ownerPan'];
-
-const getDocsCount = (p: any): { uploaded: number; total: number } => {
-  const docs = p.documents ?? {};
-  if (Array.isArray(docs)) {
-    return { uploaded: docs.length, total: REQUIRED_DOC_KEYS.length };
-  }
-  const uploaded = REQUIRED_DOC_KEYS.filter(k => !!docs[k]).length;
-  return { uploaded, total: REQUIRED_DOC_KEYS.length };
-};
 
 // ─── Status badge configs ─────────────────────────────────────────────────────
 const statusConfig: Record<string, { label: string; class: string; icon?: any }> = {
@@ -221,10 +211,6 @@ export default function MyPropertiesPage() {
             {filteredProperties.map((property: any) => {
               const verStatus = getStatus(property);
               const verCfg = statusConfig[verStatus] ?? statusConfig.pending;
-              const { uploaded, total } = getDocsCount(property);
-              const allDocsDone = uploaded >= total;
-              const feePaid = !!property.platformFeePaid;
-
               return (
                 <div
                   key={property.propertyId}
