@@ -1,7 +1,7 @@
 # LegalNest (GharBid) Project Summary
 
 ## 1. Project Overview
-LegalNest (also referenced as GharBid in the frontend) is a comprehensive real estate bidding and property management platform. It facilitates interactions between property sellers and buyers through live auctions, direct inquiries, real-time chat, and deal management. The application uses a modern tech stack featuring a React-based frontend and a Node.js/Express backend, heavily integrated with AWS services for authentication, database, storage, and notifications.
+LegalNest (also referenced as GharBid in the frontend) is a comprehensive real estate bidding and property management platform. It facilitates interactions between property sellers and buyers through live auctions, direct inquiries, real-time chat, and deal management. The application uses a modern tech stack featuring a React-based frontend and a Node.js/Express backend, heavily integrated with AWS services for authentication, database, storage, and notifications. It also integrates Razorpay for payment processing.
 
 ## 2. Technology Stack
 **Backend**:
@@ -9,6 +9,7 @@ LegalNest (also referenced as GharBid in the frontend) is a comprehensive real e
 - **Database**: AWS DynamoDB
 - **Authentication**: AWS Cognito, JWT
 - **Storage & Services**: AWS S3 (for documents/images), AWS Location Service, AWS SNS
+- **Payment Processing**: Razorpay
 - **Real-Time**: Socket.io for live auctions and chat
 - **Validation**: Zod
 - **Other**: Winston (logging), Express Rate Limit, Helmet
@@ -32,6 +33,7 @@ LegalNest (also referenced as GharBid in the frontend) is a comprehensive real e
 - **`cognitoService.js`**: Integrates with AWS Cognito for user registration, login, and token verification.
 - **`dynamoService.js`**: Abstraction layer for interacting with AWS DynamoDB tables.
 - **`locationService.js`**: Uses AWS Location Service to provide geocoding and map-related functionalities.
+- **`razorpayService.js`**: Integrates Razorpay API for handling transactions and payments securely.
 - **`s3Service.js`**: Handles secure uploads of property images and user legal documents to AWS S3.
 
 ### Frontend Services (`frontend/src/services`)
@@ -40,6 +42,7 @@ LegalNest (also referenced as GharBid in the frontend) is a comprehensive real e
 - **`authService.ts`**: Functions for user sign-up, sign-in, token refresh, and Cognito integration.
 - **`chatService.ts`**: API calls for fetching chat history, initiating chats, and scheduling meetings.
 - **`inquiryService.ts`**: Service to handle property inquiries from buyers to sellers.
+- **`paymentService.ts`**: API calls related to payment processing and Razorpay integration.
 - **`propertyService.ts`**: Endpoints for CRUD operations on properties, filtering, and searching.
 - **`sellerService.ts`**: Specific endpoints for sellers to manage properties, view auction dashboards, and handle documents.
 - **`userService.ts`**: API calls for user profile management.
@@ -52,13 +55,13 @@ backend/src/
 ├── app.js
 ├── server.js
 ├── config/              # AWS, Database, Redis, Env configuration
-├── controllers/         # Request handlers (Auction, Auth, Buyer, Chat, Inquiry, Property, Seller, User)
+├── controllers/         # Request handlers (Auction, Auth, Buyer, Chat, Inquiry, Payment, Property, Seller, User)
 ├── middleware/          # Auth, RBAC, Error Handler, Rate Limit, Validation
 ├── models/
 │   └── dynamodb/        # DB Models (Auction, Bid, Inquiry, Payment, Property, Purchase, SavedProperties, Transaction, UserDocs, User)
 ├── routes/
-│   └── v1/              # API Route definitions
-├── services/            # Core business logic & AWS integrations (see section 3)
+│   └── v1/              # API Route definitions (includes payment.routes.js)
+├── services/            # Core business logic & AWS/Razorpay integrations (see section 3)
 ├── utils/               # Constants, Helpers, JWT utilities, Logger
 ├── validators/          # Zod validation schemas
 └── websocket/           # Socket.io server, authentication, and event handlers
@@ -80,7 +83,7 @@ frontend/src/
 │   └── seller/          # Seller Dashboard, Property Management, Document Upload, Identity Docs
 ├── hooks/               # Custom React hooks (useAuth, useSocket, useGeolocation)
 ├── pages/               # Top-level pages (Landing, Login, Register, Verify, AuctionRoom)
-├── services/            # API interaction layer (see section 3)
+├── services/            # API interaction layer (includes paymentService.ts, see section 3)
 ├── store/               # Zustand global state (auth, auction, chat, filters)
 ├── styles/              # Global CSS (Tailwind)
 ├── types/               # TypeScript interfaces and type definitions
