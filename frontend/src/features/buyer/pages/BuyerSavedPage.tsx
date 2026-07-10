@@ -1,5 +1,6 @@
-import { Heart } from 'lucide-react';
+import { Heart, Scale, X, Check } from 'lucide-react';
 import { BuyerPropertyCard } from '../../../components/properties/BuyerPropertyCard';
+import { useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { getSavedProperties } from '../../../services/userService';

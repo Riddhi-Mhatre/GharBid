@@ -126,7 +126,7 @@ export const PropertyMap = ({ properties, center, onPropertyClick, zoom = 14 }: 
                  </div>
                  <div class="flex flex-col justify-center flex-1 min-w-0">
                     <span class="text-sm font-bold text-white group-hover:text-primary truncate transition-colors" title="${p.title}">${p.title}</span>
-                    <span class="text-[10px] text-muted truncate mt-0.5">${p.location?.city ?? ''}, ${p.location?.state ?? ''} • <span class="capitalize text-white/80">${p.type}</span></span>
+                    <span class="text-[10px] text-muted truncate mt-0.5">${p.city}, ${p.state} • <span class="capitalize text-white/80">${p.type}</span></span>
                     <span class="text-xs font-black text-green-400 mt-1.5 drop-shadow-[0_0_5px_rgba(74,222,128,0.3)]">₹${Number(p.price || p.salePrice || 0).toLocaleString('en-IN')}</span>
                  </div>
               </div>

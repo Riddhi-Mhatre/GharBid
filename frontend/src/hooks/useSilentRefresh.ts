@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/authStore';
 import axios from 'axios';
 
 export const useSilentRefresh = () => {
-  const { refreshToken, setTokens, isAuthenticated } = useAuthStore();
+  const { token, refreshToken, setTokens, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     if (!isAuthenticated || !refreshToken) return;
