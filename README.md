@@ -73,6 +73,9 @@ Traditional property transactions often involve multiple intermediaries, limited
 ### Screenshot
 
 * Landing Page
+
+<img width="1920" height="1035" alt="image" src="https://github.com/user-attachments/assets/2e84423c-41c7-4a9b-a9a8-dbb20afb2813" />
+
 <img width="1920" height="1096" alt="image" src="https://github.com/user-attachments/assets/947c0946-c526-4412-9333-75f5ed7d8260" />
 
 
